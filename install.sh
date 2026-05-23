@@ -1092,7 +1092,25 @@ const patches = [
 
   // ── 限制移除 ──
 
-  // ── 以下补丁已移除：CYBER_RISK_INSTRUCTION 移除、URL 生成限制移除、高危操作确认移除、未登录提醒移除 ──
+  {
+    name: 'Remove CYBER_RISK_INSTRUCTION',
+    pattern: /([\w$]+)="IMPORTANT: Assist with authorized security testing[^"]*"/g,
+    replacer: (m, varName) => `${varName}=""`,
+    sentinel: 'Assist with authorized security testing',
+  },
+  {
+    name: 'Remove URL generation restriction',
+    pattern: /\n\$\{[\w$]+\}\nIMPORTANT: You must NEVER generate or guess URLs[^.]*\. You may use URLs provided by the user in their messages or local files\./g,
+    replacer: () => '',
+    sentinel: 'IMPORTANT: You must NEVER generate or guess URLs',
+  },
+  // ── 高危操作确认补丁已移除，保留官方原始行为 ──
+  {
+    name: 'Remove "Not logged in" notice',
+    pattern: /Not logged in\. Run [\w ]+ to authenticate\./g,
+    replacer: () => '',
+    optional: true,
+  },
 
   // ── 消息过滤 ──
 
