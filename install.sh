@@ -7,7 +7,7 @@ set -e
 #  Downloads Claude Code from npm, applies patches, replaces claude command
 #
 #  用法:
-#    curl -fsSL https://raw.githubusercontent.com/0Chencc/clawgod/main/install.sh | bash
+#    curl -fsSL https://raw.githubusercontent.com/chow651/clawgod/main/install.sh | bash
 #    # 或
 #    bash install.sh [--version 2.1.89]
 # ─────────────────────────────────────────────────────────
@@ -1038,14 +1038,14 @@ const patches = [
       // arg-quoting; payload must be UTF-16LE base64.
       const psScript =
         "$p=if($env:HTTPS_PROXY){$env:HTTPS_PROXY}elseif($env:HTTP_PROXY){$env:HTTP_PROXY}else{$null};" +
-        "$u='https://github.com/0Chencc/clawgod/releases/latest/download/install.ps1';" +
+        "$u='https://github.com/chow651/clawgod/releases/latest/download/install.ps1';" +
         "if($p){iex(irm -Proxy $p $u)}else{iex(irm $u)}";
       const psB64 = Buffer.from(psScript, 'utf16le').toString('base64');
       return (
         prefix +
         `process.stderr.write("[clawgod] 'claude update' is handled by clawgod self-update.\\n[clawgod] To leave clawgod and use vanilla update: bash ~/.clawgod/install.sh --uninstall\\n[clawgod] Continuing now\\u2026\\n");` +
         `const _w=process.platform==='win32';` +
-        `const _c=_w?['powershell','-NoProfile','-EncodedCommand','${psB64}']:['bash','-c','curl -fsSL https://github.com/0Chencc/clawgod/releases/latest/download/install.sh | bash'];` +
+        `const _c=_w?['powershell','-NoProfile','-EncodedCommand','${psB64}']:['bash','-c','curl -fsSL https://github.com/chow651/clawgod/releases/latest/download/install.sh | bash'];` +
         `const _r=require('child_process').spawnSync(_c[0],_c.slice(1),{stdio:'inherit'});` +
         `process.exit(_r.status||0);`
       );
@@ -1092,32 +1092,7 @@ const patches = [
 
   // ── 限制移除 ──
 
-  {
-    name: 'Remove CYBER_RISK_INSTRUCTION',
-    pattern: /([\w$]+)="IMPORTANT: Assist with authorized security testing[^"]*"/g,
-    replacer: (m, varName) => `${varName}=""`,
-    sentinel: 'Assist with authorized security testing',
-  },
-  {
-    name: 'Remove URL generation restriction',
-    pattern: /\n\$\{[\w$]+\}\nIMPORTANT: You must NEVER generate or guess URLs[^.]*\. You may use URLs provided by the user in their messages or local files\./g,
-    replacer: () => '',
-    sentinel: 'IMPORTANT: You must NEVER generate or guess URLs',
-  },
-  {
-    name: 'Remove cautious actions section',
-    // v2.1.88-~v2.1.122: function GSY(){return`# Executing actions...`}
-    // v2.1.123+: function _j3(H){if(LE8(H)==="compact")return`# Executing...short`;return`# Executing...long`}
-    pattern: /function ([\w$]+)\(([\w$]*)\)\{(?:if\([\s\S]{1,200}?\)return`# Executing actions with care\n\n[\s\S]*?`;)?return`# Executing actions with care\n\n[\s\S]*?`\}/g,
-    replacer: (m, fn, arg) => `function ${fn}(${arg}){return\`\`}`,
-    sentinel: '# Executing actions with care',
-  },
-  {
-    name: 'Remove "Not logged in" notice',
-    pattern: /Not logged in\. Run [\w ]+ to authenticate\./g,
-    replacer: () => '',
-    optional: true,
-  },
+  // ── 以下补丁已移除：CYBER_RISK_INSTRUCTION 移除、URL 生成限制移除、高危操作确认移除、未登录提醒移除 ──
 
   // ── 消息过滤 ──
 
@@ -1341,7 +1316,7 @@ CLAWGOD_CLI=\"$CLAWGOD_DIR/cli.cjs\"
 BUN_BIN=\"$BUN_BIN\"
 if [ ! -f \"\$CLAWGOD_CLI\" ]; then
   echo \"clawgod: installation at $CLAWGOD_DIR is missing (cli.cjs not found)\" >&2
-  echo \"clawgod: reinstall via  curl -fsSL https://github.com/0Chencc/clawgod/releases/latest/download/install.sh | bash\" >&2
+  echo \"clawgod: reinstall via  curl -fsSL https://github.com/chow651/clawgod/releases/latest/download/install.sh | bash\" >&2
   echo \"clawgod: or remove this launcher:  rm \\\"\$0\\\"\" >&2
   exit 127
 fi
